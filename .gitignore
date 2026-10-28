@@ -1,0 +1,30 @@
+# KiCad temporary, backup, lock, and cache files.
+# Fabrication outputs (fab/) and board renders (renders/) are tracked.
+
+# Backup directories and files
+backups/
+*-backups/
+*.bak
+*.bck
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*.kicad_mod-bak
+*.sch-bak
+gen.py.bak-*
+
+# Autosaves and lock files
+_autosave-*
+*.lck
+~*.lck
+*~
+
+# Footprint library cache
+fp-info-cache
+
+# Rescue and auto-saved project copies
+*-save.pro
+*-save.kicad_pcb
+*-save.kicad_sch
+*.tmp
+*.000
+#auto_saved_files#

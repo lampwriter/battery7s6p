@@ -1,0 +1,136 @@
+** Drc report for battery7s6p_bot.kicad_pcb **
+** Created on 2026-10-27T16:41:55-0500 **
+
+** Found 42 DRC violations **
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(13.1250 mm, 121.3750 mm): Footprint C7_6
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(53.6250 mm, 121.3750 mm): Footprint C5_6
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(73.8750 mm, 80.8750 mm): Footprint C4_4
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(13.1250 mm, 101.1250 mm): Footprint C7_5
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(94.1250 mm, 101.1250 mm): Footprint C3_5
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(94.1250 mm, 121.3750 mm): Footprint C3_6
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(134.6250 mm, 121.3750 mm): Footprint C1_6
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(94.1250 mm, 60.6250 mm): Footprint C3_3
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(114.3750 mm, 121.3750 mm): Footprint C2_6
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(73.8750 mm, 101.1250 mm): Footprint C4_5
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(33.3750 mm, 60.6250 mm): Footprint C6_3
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(134.6250 mm, 101.1250 mm): Footprint C1_5
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(73.8750 mm, 121.3750 mm): Footprint C4_6
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(73.8750 mm, 20.1250 mm): Footprint C4_1
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(33.3750 mm, 121.3750 mm): Footprint C6_6
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(94.1250 mm, 40.3750 mm): Footprint C3_2
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(33.3750 mm, 101.1250 mm): Footprint C6_5
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(13.1250 mm, 60.6250 mm): Footprint C7_3
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(114.3750 mm, 101.1250 mm): Footprint C2_5
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(53.6250 mm, 20.1250 mm): Footprint C5_1
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(94.1250 mm, 80.8750 mm): Footprint C3_4
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(53.6250 mm, 101.1250 mm): Footprint C5_5
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(13.1250 mm, 40.3750 mm): Footprint C7_2
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(13.1250 mm, 20.1250 mm): Footprint C7_1
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(33.3750 mm, 40.3750 mm): Footprint C6_2
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(73.8750 mm, 60.6250 mm): Footprint C4_3
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(53.6250 mm, 40.3750 mm): Footprint C5_2
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(114.3750 mm, 20.1250 mm): Footprint C2_1
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(53.6250 mm, 80.8750 mm): Footprint C5_4
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(114.3750 mm, 60.6250 mm): Footprint C2_3
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(53.6250 mm, 60.6250 mm): Footprint C5_3
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(134.6250 mm, 20.1250 mm): Footprint C1_1
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(134.6250 mm, 80.8750 mm): Footprint C1_4
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(134.6250 mm, 60.6250 mm): Footprint C1_3
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(73.8750 mm, 40.3750 mm): Footprint C4_2
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(94.1250 mm, 20.1250 mm): Footprint C3_1
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(134.6250 mm, 40.3750 mm): Footprint C1_2
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(33.3750 mm, 20.1250 mm): Footprint C6_1
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(114.3750 mm, 40.3750 mm): Footprint C2_2
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(33.3750 mm, 80.8750 mm): Footprint C6_4
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(114.3750 mm, 80.8750 mm): Footprint C2_4
+[lib_footprint_issues]: The current configuration does not include the footprint library 'battery7s6p'.
+    Local override; warning
+    @(13.1250 mm, 80.8750 mm): Footprint C7_4
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** End of Report **
