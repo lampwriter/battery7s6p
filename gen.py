@@ -3,7 +3,12 @@ from pcbnew import VECTOR2I, FromMM as M
 P=20.25; AX=3.0; AY=10.0; NC=7; NR=6
 ARR_W=NC*P; ARR_H=NR*P
 TX=AX+ARR_W+3.0; W=TX+35.0; H=AY+ARR_H+3.0
-FUSE_W=1.0; TAP_FUSE_W=0.25; TAP_W=0.5
+OZ=int(os.environ.get('CU_OZ','2'))   # 2 = v1 default; CU_OZ=1 -> 1oz variant
+SUF='' if OZ==2 else f'_{OZ}oz'
+if OZ==2:
+    FUSE_W=1.0; TAP_FUSE_W=0.25; TAP_W=0.5; XTY=62.0
+else:   # 1oz: same fuse cross-section (2x width), XT90 moved down so N7 tail spans rows 0-3
+    FUSE_W=2.0; TAP_FUSE_W=0.45; TAP_W=0.8; XTY=85.0
 POS_PAD=6.0; NEG_PAD=12.0; KEEP_R=6.5
 FPLIB='/usr/share/kicad/footprints'
 def V(x,y): return VECTOR2I(M(x),M(y))
@@ -41,7 +46,7 @@ def build(which):
         ol=z.Outline(); ol.NewOutline()
         for p in poly: ol.Append(M(p[0]),M(p[1]))
         if keep:
-            z.SetIsRuleArea(True); z.SetDoNotAllowCopperPour(True); z.SetDoNotAllowTracks(False)
+            z.SetIsRuleArea(True); (getattr(z,"SetDoNotAllowZoneFills",None) or z.SetDoNotAllowCopperPour)(True); z.SetDoNotAllowTracks(False)
             z.SetDoNotAllowVias(False); z.SetDoNotAllowPads(False); z.SetDoNotAllowFootprints(False)
         else:
             z.SetNet(net(netname)); z.SetLocalClearance(M(0.5)); z.SetMinThickness(M(0.25))
@@ -85,7 +90,7 @@ def build(which):
         x0=max(min(xs)-P/2+0.5,1.0); x1=min(max(xs)+P/2-0.5,AX+ARR_W+0.5)
         if max(xs)>AX+ARR_W-P:
             x1=AX+ARR_W+0.5
-            ty1 = 66.4 if top else H-1.0
+            ty1 = (XTY+4.4) if top else H-1.0
             zone(n,pcbnew.F_Cu,[(x0,ytop),(x1,ytop),(x1,34),(W-1,34),(W-1,ty1),(x1,ty1),(x1,ybot),(x0,ybot)])
             continue
         zone(n,pcbnew.F_Cu,rect(x0,ytop,x1,ybot))
@@ -133,15 +138,15 @@ def build(which):
     chan={}
     if top:
         # XT90 PCB connector
-        xt=loadfp('Connector_AMASS','AMASS_XT90PW-M_1x02_P10.90mm_Horizontal','J1','XT90PW-M',W-22,62,-90)
+        xt=loadfp('Connector_AMASS','AMASS_XT90PW-M_1x02_P10.90mm_Horizontal','J1','XT90PW-M',W-22,XTY,-90)
         for p in xt.Pads():
             if p.GetNumber()=='1': p.SetNet(net('N7'))
             if p.GetNumber()=='2': p.SetNet(net('N0'))
         for L in (pcbnew.F_Cu,pcbnew.B_Cu):
-            if L==pcbnew.B_Cu: zone('N7',L,rect(AX+ARR_W+0.5,34,W-1,66.4),prio=1)
-            zone('N0',L,rect(AX+ARR_W+2.5,67.4,W-1,H-1.0),prio=1)
-        text('+',W-30,62,pcbnew.F_SilkS,3); text('-',W-30,72.9,pcbnew.F_SilkS,3)
-        text('XT90 PACK',W-15,50,pcbnew.F_SilkS,1.5)
+            if L==pcbnew.B_Cu: zone('N7',L,rect(AX+ARR_W+0.5,34,W-1,XTY+4.4),prio=1)
+            zone('N0',L,rect(AX+ARR_W+2.5,XTY+5.4,W-1,H-1.0),prio=1)
+        text('+',W-30,XTY,pcbnew.F_SilkS,3); text('-',W-30,XTY+10.9,pcbnew.F_SilkS,3)
+        text('XT90 PACK',W-15,XTY-12,pcbnew.F_SilkS,1.5)
         j2=loadfp('Connector_JST','JST_XH_B8B-XH-A_1x08_P2.50mm_Vertical','J2','B8B-XH-A BAL',JX,JY)
         j3=loadfp('Connector_JST','JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical','J3','B4B-XH-A from BOT',JX,JY+12)
         for p in j2.Pads(): p.SetNet(net(f"N{int(p.GetNumber())-1}" if p.GetNumber()!='1' else 'N0_SENSE'))
@@ -171,12 +176,18 @@ def build(which):
         path([(xstub,ytop+3),(xstub,ytop-0.5)],n,TAP_W); path([(xstub,ytop-0.5),(xstub,yc+1.5)],n,TAP_FUSE_W); path([(xstub,yc+1.5),(xstub,yc)],n,TAP_W)
         via(xstub,yc,n)
         path([(xstub,yc),(px,yc),(px,JY)],n,TAP_W,pcbnew.B_Cu)
+    if OZ!=2:   # stitch F/B layers of pack-terminal zones
+        for yy in range(38,int(XTY)-4,4):
+            for xx in (TX+2,TX+6): via(xx,yy,'N7' if top else 'N0',1.0,0.6)
+        for yy in (range(int(XTY+9),int(H)-10,4) if top else []):
+            for xx in (TX+2,):
+                via(xx,yy,'N0',1.0,0.6)
     # notes
-    for i,l in enumerate([f"7S6P 18650 {side} v1","2oz Cu ENIG","cells face B side","FISH PAPER ON","EVERY + END!"]):
-        text(l,TX+17,H-48+i*2.2,pcbnew.F_SilkS,1.2)
+    for i,l in enumerate([f"7S6P 18650 {side} v1{SUF}",f"{OZ}oz Cu ENIG","cells face B side","FISH PAPER ON","EVERY + END!"]):
+        text(l,TX+17,(H-48 if OZ==2 else 40)+i*2.2,pcbnew.F_SilkS,1.2)
     text("FISH-PAPER RING REQUIRED ON EVERY + CELL END - BARE CANS ARE NEGATIVE",AX+ARR_W/2,AY+ARR_H+1.6,pcbnew.B_SilkS,1.0,True)
     pass
-    out=f"/workspace/battery7s6p/{which}/battery7s6p_{which}.kicad_pcb"
+    out=f"/workspace/battery7s6p/{which}{SUF}/battery7s6p_{which}{SUF}.kicad_pcb"
     os.makedirs(os.path.dirname(out),exist_ok=True)
     pcbnew.SaveBoard(out,b)
     print("saved",out, "size", W, H)

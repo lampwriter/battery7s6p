@@ -1,0 +1,21 @@
+7S6P 1oz variant - current check (IPC-2221 external, dT=20C target), 30 A pack current
+Need for 30 A @ dT20: 21.5 mm on 1oz single layer (10.7 mm on 2oz).
+
+Interior series-node zones (midline between columns, minus 3 M3 holes), F only: 30 A over 112 mm -> dT 1oz   1.3 C (2oz  0.4 C)
+Pos column at cell row (N7 col, gaps beside 13mm keepout), worst: row5 current: 5 A over 7.2 mm -> dT 1oz   2.1 C (2oz  0.7 C)
+N7: rows4+5 into XT90 tail, keepout-to-corner neck (1oz layout, XT90 at y=85): 10 A over 8.2 mm -> dT 1oz   8.1 C (2oz  2.6 C)
+N7 tail to XT90 (x=148..182, y 34..89.4), F only (B stitched adds more): 30 A over 55 mm -> dT 1oz   4.3 C (2oz  1.4 C)
+N0 top zone (y 90.4..133.5) F+B each, per layer half current: 15 A over 42 mm -> dT 1oz   1.4 C (2oz  0.4 C)
+N0 bottom tail (y 34..133.5) F only, neg column (12mm pads, no keepout): 30 A over 97 mm -> dT 1oz   1.7 C (2oz  0.5 C)
+XT90 pad 7.2mm, zone wrap ~3/4 perimeter x 2 layers: 30 A over 34 mm -> dT 1oz   9.4 C (2oz  3.0 C)
+M5 lug pad 10.6mm, full perimeter x 2 layers: 30 A over 66 mm -> dT 1oz   3.2 C (2oz  1.0 C)
+For reference: v1 layout N7 neck beside row2 (XT90 at y=62): 15 A over 5.6 mm -> dT 1oz  38.0 C (2oz 12.1 C)
+  -> v1 layout would be ~38 C at 1oz: NOT ok; fixed by moving XT90 23 mm down (N7 tail now covers rows 0-3).
+
+Cell fuse: 2oz 1.0 mm vs 1oz 2.0 mm (same 70 um*mm cross-section):
+  2oz 1.0mm: cont@dT20 5.4 A; Onderdonk melt 10s/1s/0.1s/10ms: 6.4A 20.2A 63.9A 202.1A
+  1oz 2.0mm: cont@dT20 5.4 A; Onderdonk melt 10s/1s/0.1s/10ms: 6.4A 20.2A 63.9A 202.1A
+  exposed fuse length unchanged ~3.75 mm (island r2.75 to keepout r6.5); blow current ~same (thin 1oz conducts slightly less heat away -> marginally lower).
+  Balance tap fuse 2oz 0.25mm: cont@dT20 1.96 A; melt 1s 5.1A 10ms 50.5A
+  Balance tap fuse 1oz 0.45mm: cont@dT20 1.82 A; melt 1s 4.5A 10ms 45.5A
+Balance tap traces 0.8 mm (was 0.5). Stitching vias (1.0/0.6) tie F/B on N7 tail and N0 zone.
