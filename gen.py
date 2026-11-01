@@ -4,7 +4,12 @@ P=20.25; AX=3.0; AY=10.0; NC=7; NR=6
 ARR_W=NC*P; ARR_H=NR*P
 TX=AX+ARR_W+3.0; W=TX+35.0; H=AY+ARR_H+3.0
 OZ=int(os.environ.get('CU_OZ','2'))   # 2 = v1 default; CU_OZ=1 -> 1oz variant
-SUF='' if OZ==2 else f'_{OZ}oz'
+V12=os.environ.get('V12','0')=='1'   # v1.2: 1oz + flexure slots + clamp-rod holes, 0.8mm FR4
+if V12: OZ=1
+SUF='' if OZ==2 else ('_v12' if V12 else f'_{OZ}oz')
+THK=0.8 if V12 else 1.6
+BRIDGE=10.0; SLOT_W=2.0; ROD_R=3.25   # v1.2 flexure geometry (6.5mm rod/spacer-tube holes)
+ROD_PTS=[(c,r) for c in (1,3,4,6) for r in (1,3,5)]   # 12 clamp rods (crossing indices)
 if OZ==2:
     FUSE_W=1.0; TAP_FUSE_W=0.25; TAP_W=0.5; XTY=62.0
 else:   # 1oz: same fuse cross-section (2x width), XT90 moved down so N7 tail spans rows 0-3
@@ -16,7 +21,7 @@ def V(x,y): return VECTOR2I(M(x),M(y))
 def build(which):
     b=pcbnew.BOARD()
     ds=b.GetDesignSettings()
-    ds.SetCopperLayerCount(2)
+    ds.SetCopperLayerCount(2); ds.SetBoardThickness(M(THK))
     ds.m_TrackMinWidth=M(0.2); ds.m_MinClearance=M(0.2); ds.m_MinThroughDrill=M(0.3)
     ds.m_ViasMinSize=M(0.6); ds.m_ViasMinAnnularWidth=M(0.15); ds.m_HoleClearance=M(0.25)
     ds.m_CopperEdgeClearance=M(0.4); ds.m_HoleToHoleMin=M(0.5)
@@ -111,15 +116,43 @@ def build(which):
                 track((x,y),(x,y+KEEP_R+1.5),n,FUSE_W)   # fuse link, downward
                 silkcirc(x,y,KEEP_R+0.3,pcbnew.F_SilkS)
                 silkcirc(x,y,4.6,pcbnew.B_SilkS)   # fish-paper ring marker
-                text('+',x+6.4,y-6.4,pcbnew.B_SilkS,1.5,True)
+                text('+',x+(5.6 if V12 else 6.4),y-(5.6 if V12 else 6.4),pcbnew.B_SilkS,1.5,True)
             else:
-                text('-',x+7.5,y-7.5,pcbnew.B_SilkS,1.5,True)
+                text('-',x+(5.8 if V12 else 7.5),y-(5.8 if V12 else 7.5),pcbnew.B_SilkS,1.5,True)
         if not pos:
             for r in range(1,NR):
                 for dx in (-4,0,4): via(x+dx,AY+r*P,n)
         text(f"G{c+1}{'+' if pos else '-'}",x,AY+ARR_H+1.5,pcbnew.F_SilkS,1.5)
+    if V12:
+        # flexure slots on interior grid lines + 6.5mm holes at every crossing; islands joined by 10mm bridges
+        def crossing_poly(cx,cy):
+            a=SLOT_W/2; L=(P-BRIDGE)/2; R=ROD_R; pts=[]
+            t0=math.asin(a/R)
+            for k in range(4):
+                th=k*math.pi/2
+                def rot(u,v): return (cx+u*math.cos(th)-v*math.sin(th), cy+u*math.sin(th)+v*math.cos(th))
+                # arm along +u: rounded end
+                pts.append(rot(R*math.cos(t0),-a))
+                pts.append(rot(L-a,-a))
+                for i in range(1,8):
+                    ang=-math.pi/2+math.pi*i/8; pts.append(rot(L-a+a*math.cos(ang),a*math.sin(ang)))
+                pts.append(rot(L-a,a)); pts.append(rot(R*math.cos(t0),a))
+                # circle arc to next arm
+                for i in range(1,6):
+                    ang=t0+(math.pi/2-2*t0)*i/6; pts.append(rot(R*math.cos(ang),R*math.sin(ang)))
+            return pts
+        for c in range(1,NC):
+            for r in range(1,NR):
+                cx,cy=AX+c*P,AY+r*P
+                cp=crossing_poly(cx,cy)
+                for i in range(len(cp)):
+                    sh=pcbnew.PCB_SHAPE(b); sh.SetShape(pcbnew.SHAPE_T_SEGMENT); sh.SetLayer(pcbnew.Edge_Cuts); sh.SetWidth(M(0.1))
+                    sh.SetStart(V(*cp[i])); sh.SetEnd(V(*cp[(i+1)%len(cp)])); b.Add(sh)
+                for L_ in (pcbnew.F_Cu,pcbnew.B_Cu):
+                    z=zone(None,L_,circ(cx,cy,ROD_R+1.25),keep=True)
+                if (c,r) in ROD_PTS: text('ROD',cx+4.2,cy+4.2,pcbnew.F_SilkS,1.0)
     # mounting holes (interstitial, symmetric)
-    for kx,jy in [(1,1),(3,1),(4,1),(6,1),(1,5),(3,5),(4,5),(6,5),(1,3),(6,3)]:
+    for kx,jy in ([] if V12 else [(1,1),(3,1),(4,1),(6,1),(1,5),(3,5),(4,5),(6,5),(1,3),(6,3)]):
         fp=pcbnew.FootprintLoad(FPLIB+'/MountingHole.pretty','MountingHole_3.2mm_M3')
         fp.SetReference(f"H{kx}{jy}"); fp.Reference().SetVisible(False); fp.SetPosition(V(AX+kx*P,AY+jy*P)); b.Add(fp)
     for i,(hx,hy) in enumerate([(W-6,H-6),(TX+4,H-6)]):
@@ -183,10 +216,12 @@ def build(which):
             for xx in (TX+2,):
                 via(xx,yy,'N0',1.0,0.6)
     # notes
-    for i,l in enumerate([f"7S6P 18650 {side} v1{SUF}",f"{OZ}oz Cu ENIG","cells face B side","FISH PAPER ON","EVERY + END!"]):
+    for i,l in enumerate([f"7S6P 18650 {side} "+("v1.2" if V12 else f"v1{SUF}"),f"{OZ}oz Cu ENIG"+(" 0.8mm" if V12 else ""),"cells face B side","FISH PAPER ON","EVERY + END!"]):
         text(l,TX+17,(H-48 if OZ==2 else 40)+i*2.2,pcbnew.F_SilkS,1.2)
     text("FISH-PAPER RING REQUIRED ON EVERY + CELL END - BARE CANS ARE NEGATIVE",AX+ARR_W/2,AY+ARR_H+1.6,pcbnew.B_SilkS,1.0,True)
-    pass
+    if V12:
+        text("ROD = 12x M4 + 1/4in TUBE",TX+17,40+5*2.2,pcbnew.F_SilkS,1.0)
+        text("3.2mm SILICONE FOAM BEHIND",TX+17,40+6*2.2,pcbnew.F_SilkS,1.0)
     out=f"/workspace/battery7s6p/{which}{SUF}/battery7s6p_{which}{SUF}.kicad_pcb"
     os.makedirs(os.path.dirname(out),exist_ok=True)
     pcbnew.SaveBoard(out,b)

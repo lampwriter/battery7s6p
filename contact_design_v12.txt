@@ -1,0 +1,92 @@
+battery7s6p v1.2 - PRESSURE-CONTACT DESIGN NOTE (2026-11-01)
+===============================================================
+Variant: 1 oz Cu, ENIG, 2 layers, **0.8 mm FR4** (order option: thickness 0.8 mm). Build: kicad10-env bash build_v12.sh && kicad10-env bash export_v12.sh
+v1 (2 oz) and v1.1 (1 oz) are unchanged and still reproducible (gen.py with CU_OZ=2/1; V12=1 selects v1.2).
+
+1. WHAT WAS CHOSEN
+------------------
+Solder-free, weld-free compression stack per module end:
+  rigid backing plate | 3.2 mm silicone foam pad | PCB v1.2 (0.8 mm, flexure islands) | cells (proud of HDPE) ... same mirrored at other end
+  12 x M4 rods inside 1/4in OD spacer tubes set a HARD STOP, so the foam squeeze (= contact force) is fixed by geometry, not by
+  how hard the nuts are torqued.
+
+What the PCB does (manufactured feature, no parts): every cell pad sits on its own ~18 x 18 mm "island". Islands are separated by
+2 mm routed slots on every interior grid line and joined only by 10 mm bridges at the middle of each cell edge. At each of the 30
+interstitial points the slots meet in a 6.5 mm hole (rod/tube passes here; 12 used, the rest are spare/flex). The thin 0.8 mm board
+plus slots lets each cell's island tilt/deflect into the foam independently, so cell length variation is taken up by the foam
+behind that cell instead of the whole stiff board riding on the longest cells. Copper is pulled back 1.25 mm from all rod holes.
+
+Why not spring contacts (researched):
+  - LCSC/JLCPCB-placeable spring contacts are all low-force: Harwin S7041-42R (LCSC C21394881, 5 A, 1.2 N, 4.0 mm free / 2.8 mm min,
+    ~1189 in stock, ~$0.34-0.45), Harwin S1741-46R (C22427402, 6 A, 0.49 N, 295 stock). Harwin's 7-14 A multi-directional parts
+    (S1951-46R 7 A, S1941-42R 9 A, S1991/S1961-46R 14 A; travel only 0.4-0.7 mm) were not found on LCSC.
+    Spec contact resistance <=20 mOhm at 1-2 N -> up to 0.5 W per contact at 5 A; 10 boards x 42 ends x 2-3 contacts = 840-1260 parts.
+  - LCSC pogo pins: 1-2.5 A, 50-100 mOhm. MYOUNG 18650 holder springs (e.g. MY-18650-05-J C19184124) have no current rating and
+    a ~20 mOhm wire-coil path (flashlight users bypass them for this reason).
+  -> No acceptable JLCPCB-placeable 5 A cell contact exists. High-force flat pressure (~25 N) on ENIG gives ~1-3 mOhm instead.
+Sources: harwin.com/products/S1951-46R, Harwin C055 spec PDF, lcsc.com/product-detail/C21394881.html, lcsc.com/category/742.html,
+Rogers BISCO HT-800 datasheet (rogerscorp.com).
+
+2. CALCULATIONS
+---------------
+CURRENT CHECK v1.2 (1oz, IPC-2221 external, target dT<=20C)
+  Column-to-column bridge, typical (one cell's 5 A), 10 mm F only: dT   1.2 C
+  Column-to-column bridge, 2x unequal sharing (10 A), 10 mm: dT   5.8 C
+  Column-to-column bridge, 3x (15 A), 10 mm: dT  14.6 C
+  All 6 bridges of one column line together, 30 A over 70 mm: dT   2.9 C
+  N7 (top)/N0 (bot) end column, rows4+5 -> tail via row-line-4 bridge, 10 A over 15 mm: dT   3.0 C
+  Row-line bridge inside a column (cell-to-cell sharing), 5 A over 10 mm: dT   1.2 C
+  Unchanged from v1.1 (copper not touched): N7 tail 4.3 C, XT90 pad 9.4 C, N0 zones 1.4-1.7 C, M5 lug 3.2 C, cell fuses identical.
+
+FLEXURE / FORCE
+  Bridge (10 mm wide, 0.8 mm FR4, eff. hinge length 4.0 mm): EI=8533 N*mm^2, rot. stiffness 2133 N*mm/rad
+   neighbour cell 0.1 mm shorter -> up to ~4.2 N lost to 4 bridges
+   neighbour cell 0.2 mm shorter -> up to ~8.4 N lost to 4 bridges
+   neighbour cell 0.3 mm shorter -> up to ~12.6 N lost to 4 bridges
+  (same bridge in 1.6 mm FR4 would be 8x stiffer -> why v1.2 is 0.8 mm)
+  Foam: BISCO HT-800 3.18 mm (1/8in), CFD 67 kPa typ (41-97 spec) @25%; area/cell 377 mm^2
+   -> nominal contact force 25.3 N/cell at 0.80 mm squeeze (spec range 15-37 N); ~32 N/mm
+   cell -0.3 mm vs nominal: ~16 N (foam squeeze 16%)
+   cell -0.1 mm vs nominal: ~22 N (foam squeeze 22%)
+   cell +0.1 mm vs nominal: ~28 N (foam squeeze 28%)
+   cell +0.3 mm vs nominal: ~35 N (foam squeeze 34%)
+  Clamp load per end plate: 42 x 25.3 = 1061 N (238 lbf); 12 rods -> 88 N/rod (M4 A2-70 proof ~6.2 kN: >60x margin)
+  6.35 mm 6061 plate, 40.5 mm rod grid: pressure 62 kPa, deflection ~0.42 um (negligible); 12 mm Baltic-birch ply also fine (~0.53 um)
+  Contact loss @30 A (6 x 5 A/cell), assume 2 mOhm per ENIG-to-Ni contact at ~25 N: 84 contacts x 25 A^2 x R = 4.2 W
+  Stack: plate | foam 3.18->2.39 | PCB 0.8 | cell 65.1 (measure yours) | PCB 0.8 | foam | plate -> tube length 71.47 mm(Length variation is shared by the foam at both ends of a cell, so the numbers above are conservative.)
+Recommended: sort cells by length (calipers) so each module is within +/-0.1 mm -> every cell 22-28 N.
+
+3. HARDWARE (per module = 1 top + 1 bottom board)
+-------------------------------------------------
+  2x backing plate, 182.75 x 134.5 mm (or array area + 10 mm), 1/4in 6061 aluminum or 12 mm Baltic birch plywood; drill per
+     battery7s6p_v12_drill_template.dxf layer ROD_HOLES_6p5 (use 4.5 mm in the plates if you prefer rods without tubes there);
+     cut a window for XT90/J2/J3 (they stand up on the F side, the side facing the plate).
+  2x foam pad: Rogers BISCO HT-800 (medium) silicone foam 1/8in (3.18 mm), or a generic "medium firm closed-cell silicone sponge
+     1/8in"; cut to array size with 6.5 mm rod holes. NOT polyurethane/EPDM foam (creeps/compression-sets under battery heat).
+  12x M4 threaded rod (A2 stainless or 8.8 zinc), ~100 mm, + 24 nuts + 24 washers (nylock or lock washers on one end).
+  12x spacer tube 1/4in OD (6.35), ID >= 4.3 mm (e.g. aluminum or brass tube), cut to inner plate-to-plate gap
+     = measured cell length + 1.6 + 4.77 mm (71.5 mm for 65.1 mm cells). All 12 tubes identical length (+/-0.05 mm: face them).
+  HDPE holders (your CNC): 7x6 cells at 20.25 mm pitch, 18.6 mm cell holes (layer CELL_HOLES_18p6), 6.5 mm holes at the 12 rod
+     points (min web ~1.8 mm, same as cell-to-cell web). Holder thickness must leave cells proud by >= 1.5 mm each end.
+  2x M3 x (foam thickness ~2.4 mm) nylon spacers + screws at HT holes near the connectors to tie that corner to the plate.
+  Insulation: Kapton (polyimide) adhesive ring 0.05-0.1 mm (or fish paper <= 0.15 mm) on every + shoulder. The ring must be thinner
+     than your cells' + button protrusion (measure it); otherwise the ring, not the pad, carries the clamp force.
+  Template: battery7s6p_v12_drill_template.dxf/.svg, mm, origin = PCB lower-left; pattern symmetric, same for both ends.
+
+4. ASSEMBLY
+-----------
+  1. Solder XT90, J2, J3 (top) / J1 (bot) and the M5 lug jumper as before.
+  2. Sort cells by length; put insulating rings on all + ends; load cells into the two HDPE holders with polarity per silkscreen.
+  3. Stack: plate, foam, bottom PCB (B side/pads up), cell block, top PCB (pads down), foam, plate. Insert rods+tubes.
+  4. Tighten nuts evenly in a cross pattern until every tube is snug (hard stop). Do not over-torque.
+  5. Check: each cell group voltage on the balance lead; then at ~5-10 A load measure mV drop pad-to-cell on a few cells
+     (target < 15 mV at 5 A per contact). Re-check after first heat cycles; foam keeps the force, tubes keep the geometry.
+
+5. RISKS / TRADE-OFFS
+---------------------
+  - Contact resistance of a pressure joint (~1-3 mOhm) is higher than spot welds; ~4 W total at 30 A. Keep contacts clean (IPA).
+  - Vibration on an ebike: foam keeps preload, but check periodically; consider a dab of contact grease (e.g. NO-OX-ID/Deoxit) on pads.
+  - Bridges are thin FR4 hinges: handle bare boards carefully; don't flex panels by hand.
+  - 0.8 mm board near XT90: support that corner (M3 standoffs); don't use the connector as a handle.
+  - Flexure stiffness is an engineering estimate, not FEA: build one module and test with a few short/long cells first.
+  - JLCPCB will route the slots (non-plated); no extra parts, BOM/CPL unchanged (connectors only, hand-soldered).

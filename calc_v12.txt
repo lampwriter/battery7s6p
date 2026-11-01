@@ -1,0 +1,25 @@
+CURRENT CHECK v1.2 (1oz, IPC-2221 external, target dT<=20C)
+  Column-to-column bridge, typical (one cell's 5 A), 10 mm F only: dT   1.2 C
+  Column-to-column bridge, 2x unequal sharing (10 A), 10 mm: dT   5.8 C
+  Column-to-column bridge, 3x (15 A), 10 mm: dT  14.6 C
+  All 6 bridges of one column line together, 30 A over 70 mm: dT   2.9 C
+  N7 (top)/N0 (bot) end column, rows4+5 -> tail via row-line-4 bridge, 10 A over 15 mm: dT   3.0 C
+  Row-line bridge inside a column (cell-to-cell sharing), 5 A over 10 mm: dT   1.2 C
+  Unchanged from v1.1 (copper not touched): N7 tail 4.3 C, XT90 pad 9.4 C, N0 zones 1.4-1.7 C, M5 lug 3.2 C, cell fuses identical.
+
+FLEXURE / FORCE
+  Bridge (10 mm wide, 0.8 mm FR4, eff. hinge length 4.0 mm): EI=8533 N*mm^2, rot. stiffness 2133 N*mm/rad
+   neighbour cell 0.1 mm shorter -> up to ~4.2 N lost to 4 bridges
+   neighbour cell 0.2 mm shorter -> up to ~8.4 N lost to 4 bridges
+   neighbour cell 0.3 mm shorter -> up to ~12.6 N lost to 4 bridges
+  (same bridge in 1.6 mm FR4 would be 8x stiffer -> why v1.2 is 0.8 mm)
+  Foam: BISCO HT-800 3.18 mm (1/8in), CFD 67 kPa typ (41-97 spec) @25%; area/cell 377 mm^2
+   -> nominal contact force 25.3 N/cell at 0.80 mm squeeze (spec range 15-37 N); ~32 N/mm
+   cell -0.3 mm vs nominal: ~16 N (foam squeeze 16%)
+   cell -0.1 mm vs nominal: ~22 N (foam squeeze 22%)
+   cell +0.1 mm vs nominal: ~28 N (foam squeeze 28%)
+   cell +0.3 mm vs nominal: ~35 N (foam squeeze 34%)
+  Clamp load per end plate: 42 x 25.3 = 1061 N (238 lbf); 12 rods -> 88 N/rod (M4 A2-70 proof ~6.2 kN: >60x margin)
+  6.35 mm 6061 plate, 40.5 mm rod grid: pressure 62 kPa, deflection ~0.42 um (negligible); 12 mm Baltic-birch ply also fine (~0.53 um)
+  Contact loss @30 A (6 x 5 A/cell), assume 2 mOhm per ENIG-to-Ni contact at ~25 N: 84 contacts x 25 A^2 x R = 4.2 W
+  Stack: plate | foam 3.18->2.39 | PCB 0.8 | cell 65.1 (measure yours) | PCB 0.8 | foam | plate -> tube length 71.47 mm
